@@ -66,7 +66,7 @@ function Index() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-border bg-card">
        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-sm font-semibold text-primary">BT</div>
@@ -119,7 +119,7 @@ function Index() {
               <label className="flex items-center gap-2"><input type="checkbox" checked={params.findAll} onChange={(e) => setParams({ ...params, findAll: e.target.checked })} className="accent-primary" />Enumerate all solutions</label>
             )}
           </div>
-          <button onClick={start} className="w-full rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-foreground shadow-glow transition-all hover:brightness-110 active:scale-[0.99]">
+          <button onClick={start} className="w-full rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-foreground transition-all hover:brightness-110 active:scale-[0.99]">
             Run Algorithm
           </button>
         </aside>
@@ -131,10 +131,10 @@ function Index() {
               <PanelTitle>Visualization</PanelTitle>
               <span className="font-mono text-[11px] text-muted-foreground">depth {step.depth} · frame #{step.node}</span>
             </div>
-            <div className="flex min-h-[340px] flex-col items-center justify-center gap-5 bg-[radial-gradient(circle_at_center,var(--muted)_1px,transparent_1px)] bg-[size:18px_18px] p-4 sm:p-6">
+            <div className="flex min-h-[340px] flex-col items-center justify-center gap-5 bg-muted/40 p-4 sm:p-6">
             <ProblemView id={config.id} step={step} />
             <div className={cn("w-full max-w-xl rounded-md border px-4 py-2 text-center text-sm transition-colors",
-              solved ? "border-success/50 bg-success/10 text-success" : step.valid === false ? "border-destructive/50 bg-destructive/10 text-destructive" : step.line === 9 || step.line === 12 ? "border-warning/50 bg-warning/10 text-warning" : "border-border bg-background/40")}>
+              solved ? "border-success/50 bg-success/10 text-success" : step.valid === false ? "border-destructive/50 bg-destructive/10 text-destructive" : step.line === 9 || step.line === 12 ? "border-warning/50 bg-warning/10 text-warning" : "border-border bg-muted/40")}>
               {step.msg}
             </div>
             </div>
@@ -144,7 +144,7 @@ function Index() {
             <Ctl onClick={() => { setPlaying(false); setI(0); }} label="Reset"><RotateCcw className="h-4 w-4" /></Ctl>
             <Ctl onClick={() => { setPlaying(false); setI((x) => Math.max(0, x - 1)); }} label="Previous step"><ChevronLeft className="h-4 w-4" /></Ctl>
             <button onClick={() => { if (i >= total - 1) setI(0); setPlaying(!playing); }} aria-label={playing ? "Pause" : "Play"}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow">
+              className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90">
               {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             </button>
             <Ctl onClick={() => { setPlaying(false); setI((x) => Math.min(total - 1, x + 1)); }} label="Next step"><ChevronRight className="h-4 w-4" /></Ctl>
@@ -181,7 +181,7 @@ function Index() {
             <div className="break-all font-mono text-xs text-foreground/90">{describe(config.id, step.state)}</div>
           </div>
           <div className="panel p-3">
-            <div className="mb-3 flex rounded-md bg-background/60 p-1 text-sm">
+            <div className="mb-3 flex rounded-md bg-muted p-1 text-sm">
               {(["code", "learn"] as const).map((m) => (
                 <button key={m} onClick={() => setMode(m)} className={cn("flex-1 rounded px-3 py-1.5 transition-colors", mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
                   {m === "code" ? "Code Mode" : "Learning Mode"}
