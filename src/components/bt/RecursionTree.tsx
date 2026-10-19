@@ -40,11 +40,11 @@ export function RecursionTree({ nodes, at, active, onPick }: { nodes: TreeNode[]
   }, [active, nodes]);
 
   return (
-    <div ref={ref} className="h-64 overflow-auto rounded-md bg-background/40">
+    <div ref={ref} className="h-64 overflow-auto rounded-md bg-muted/40">
       <svg width={w} height={h} className="font-mono">
         {visible.map((n) => n.parent >= 0 && pos.has(n.parent) && (() => {
           const a = px(n.parent), b = px(n.id);
-          const cls = n.status === "pruned" ? "stroke-destructive/50" : onPath.has(n.id) ? "stroke-primary" : "stroke-border";
+          const cls = n.status === "pruned" ? "stroke-destructive/50" : onPath.has(n.id) ? "stroke-primary" : "stroke-muted-foreground/40";
           return <line key={`e${n.id}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} strokeWidth={onPath.has(n.id) ? 2 : 1} strokeDasharray={n.status === "pruned" ? "3 3" : undefined} className={cls} />;
         })())}
         {visible.map((n) => {
@@ -55,7 +55,7 @@ export function RecursionTree({ nodes, at, active, onPick }: { nodes: TreeNode[]
           const fill = n.status === "pruned" ? "fill-destructive/20 stroke-destructive" : sol ? "fill-success/30 stroke-success" : isActive ? "fill-primary stroke-primary" : onPath.has(n.id) ? "fill-primary/25 stroke-primary" : returned ? "fill-muted stroke-border" : "fill-card stroke-muted-foreground";
           return (
             <g key={n.id} onClick={() => onPick(n)} className="cursor-pointer">
-              {isActive && <circle cx={x} cy={y} r={17} className="animate-pulse fill-primary/20" />}
+              {isActive && <circle cx={x} cy={y} r={17} className="animate-pulse fill-primary/15" />}
               <circle cx={x} cy={y} r={12} strokeWidth={1.5} className={fill} />
               <text x={x} y={y + 3.5} textAnchor="middle" fontSize={n.label.length > 3 ? 7 : 9}
                 className={isActive ? "fill-primary-foreground" : n.status === "pruned" ? "fill-destructive" : "fill-foreground"}>

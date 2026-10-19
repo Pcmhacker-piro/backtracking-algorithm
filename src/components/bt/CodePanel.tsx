@@ -56,7 +56,7 @@ export function CodePanel({ problem, line, valid }: { problem: ProblemId; line: 
   const active = src.map[line] ?? 0;
   const tone = line === 9 || line === 12 ? "warn" : line === 6 && valid === false ? "bad" : line === 2 ? "ok" : "cur";
   return (
-    <div className="overflow-hidden rounded-md border border-border bg-background/70">
+    <div className="overflow-hidden rounded-md border border-border bg-muted/40">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
         <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
@@ -69,8 +69,8 @@ export function CodePanel({ problem, line, valid }: { problem: ProblemId; line: 
           const on = i === active;
           return (
             <div key={i} className={cn("flex min-w-max border-l-2 border-transparent pr-4 transition-colors duration-150",
-              on && tone === "cur" && "border-primary bg-primary/12", on && tone === "warn" && "border-warning bg-warning/12",
-              on && tone === "bad" && "border-destructive bg-destructive/12", on && tone === "ok" && "border-success bg-success/12")}>
+              on && tone === "cur" && "border-primary bg-primary/10", on && tone === "warn" && "border-warning bg-warning/15",
+              on && tone === "bad" && "border-destructive bg-destructive/10", on && tone === "ok" && "border-success bg-success/10")}>
               <span className="w-9 shrink-0 select-none pr-3 text-right text-muted-foreground/50">{i + 1}</span>
               <span className={cn("whitespace-pre", on ? "text-foreground" : "text-muted-foreground")}>{t}</span>
             </div>
