@@ -65,8 +65,9 @@ function Index() {
   const solved = step.line === 2;
 
   return (
-    <div className="min-h-screen px-3 py-4 sm:px-5">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md">
+       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-sm font-semibold text-primary">BT</div>
           <div>
@@ -75,16 +76,18 @@ function Index() {
           </div>
         </div>
         <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5 rounded border border-border px-2 py-1"><span className={cn("h-1.5 w-1.5 rounded-full", playing ? "animate-pulse bg-success" : "bg-muted-foreground")} />{playing ? "running" : "idle"}</span>
           <span className="rounded border border-border px-2 py-1">{PROBLEMS.find((p) => p.id === config.id)?.name}</span>
           <span className="rounded border border-border px-2 py-1">{total} steps{recording.truncated && " · capped"}</span>
           <span className="rounded border border-border px-2 py-1">{config.id === "perm" ? "O(n · n!)" : "O(2ⁿ)"}</span>
         </div>
+       </div>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)_360px]">
+      <div className="mx-auto grid max-w-[1600px] gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[270px_minmax(0,1fr)] xl:grid-cols-[270px_minmax(0,1fr)_400px]">
         {/* Left */}
-        <aside className="panel h-fit space-y-4 p-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Algorithm</h2>
+        <aside className="panel h-fit space-y-4 p-4 lg:sticky lg:top-20">
+          <PanelTitle>Algorithm</PanelTitle>
           <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
             {PROBLEMS.map((p) => (
               <button key={p.id} onClick={() => setProblem(p.id)}
@@ -96,6 +99,7 @@ function Index() {
           </div>
 
           <div className="space-y-3 border-t border-border pt-4 text-sm">
+            <PanelTitle>Parameters</PanelTitle>
             {showSize && (
               <label className="block">
                 <div className="mb-1 flex justify-between"><span>n (elements)</span><span className="font-mono text-primary">{Math.min(sizeRange[1], Math.max(sizeRange[0], params.n))}</span></div>
@@ -115,18 +119,24 @@ function Index() {
               <label className="flex items-center gap-2"><input type="checkbox" checked={params.findAll} onChange={(e) => setParams({ ...params, findAll: e.target.checked })} className="accent-primary" />Enumerate all solutions</label>
             )}
           </div>
-          <button onClick={start} className="w-full rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
+          <button onClick={start} className="w-full rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-foreground shadow-glow transition-all hover:brightness-110 active:scale-[0.99]">
             Run Algorithm
           </button>
         </aside>
 
         {/* Center */}
         <main className="min-w-0 space-y-4">
-          <div className="panel flex min-h-[360px] flex-col items-center justify-center gap-4 p-4 sm:p-6">
+          <div className="panel overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+              <PanelTitle>Visualization</PanelTitle>
+              <span className="font-mono text-[11px] text-muted-foreground">depth {step.depth} · frame #{step.node}</span>
+            </div>
+            <div className="flex min-h-[340px] flex-col items-center justify-center gap-5 bg-[radial-gradient(circle_at_center,var(--muted)_1px,transparent_1px)] bg-[size:18px_18px] p-4 sm:p-6">
             <ProblemView id={config.id} step={step} />
             <div className={cn("w-full max-w-xl rounded-md border px-4 py-2 text-center text-sm transition-colors",
               solved ? "border-success/50 bg-success/10 text-success" : step.valid === false ? "border-destructive/50 bg-destructive/10 text-destructive" : step.line === 9 || step.line === 12 ? "border-warning/50 bg-warning/10 text-warning" : "border-border bg-background/40")}>
               {step.msg}
+            </div>
             </div>
           </div>
 
@@ -147,7 +157,7 @@ function Index() {
 
           <div className="panel p-3">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">State-space tree</h2>
+              <PanelTitle>State-space tree</PanelTitle>
               <div className="flex gap-3 text-[11px] text-muted-foreground">
                 <Legend cls="bg-primary" t="active" /><Legend cls="bg-primary/30" t="path" /><Legend cls="bg-muted" t="returned" /><Legend cls="bg-destructive/40" t="pruned" /><Legend cls="bg-success/50" t="solution" />
               </div>
@@ -158,16 +168,16 @@ function Index() {
         </main>
 
         {/* Right */}
-        <aside className="space-y-4">
+        <aside className="space-y-4 lg:col-span-2 xl:col-span-1">
           <div className="panel grid grid-cols-3 gap-px overflow-hidden p-0">
             <Stat k="Step" v={i + 1} /><Stat k="Depth" v={step.depth} /><Stat k="Calls" v={step.calls} />
             <Stat k="Backtracks" v={step.backs} /><Stat k="Solutions" v={step.solutions} />
             <Stat k="Valid?" v={step.valid === null ? "—" : step.valid ? "yes" : "no"} tone={step.valid === null ? "" : step.valid ? "text-success" : "text-destructive"} />
           </div>
           <div className="panel p-3 text-sm">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Current decision</div>
+            <PanelTitle>Current decision</PanelTitle>
             <div className="font-mono text-primary">{step.decision || "—"}</div>
-            <div className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">State</div>
+            <div className="mt-3"><PanelTitle>State</PanelTitle></div>
             <div className="break-all font-mono text-xs text-foreground/90">{describe(config.id, step.state)}</div>
           </div>
           <div className="panel p-3">
@@ -178,7 +188,7 @@ function Index() {
                 </button>
               ))}
             </div>
-            {mode === "code" ? <CodePanel line={step.line} valid={step.valid} /> : <LearningPanel />}
+            {mode === "code" ? <CodePanel problem={config.id} line={step.line} valid={step.valid} /> : <LearningPanel />}
           </div>
         </aside>
       </div>
@@ -190,14 +200,17 @@ function describe(id: ProblemId, s: any): string {
   return id === "perm" ? `perm = [${s.perm.join(", ")}]` : `chosen = {${s.chosen.map((k: number) => s.nums[k]).join(", ")}}, sum = ${s.sum}`;
 }
 
+function PanelTitle({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{children}</h2>;
+}
 function Ctl({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) {
   return <button onClick={onClick} aria-label={label} title={label} className="flex h-9 w-9 items-center justify-center rounded-md border border-border hover:bg-accent">{children}</button>;
 }
 function Stat({ k, v, tone }: { k: string; v: string | number; tone?: string }) {
   return (
-    <div className="bg-card p-3">
+    <div className="bg-card p-3 transition-colors hover:bg-accent/40">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k}</div>
-      <div className={cn("font-mono text-lg", tone)}>{v}</div>
+      <div className={cn("mt-0.5 font-mono text-xl tabular-nums", tone)}>{v}</div>
     </div>
   );
 }
