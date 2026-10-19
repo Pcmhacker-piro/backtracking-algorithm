@@ -44,7 +44,7 @@ export function RecursionTree({ nodes, at, active, onPick }: { nodes: TreeNode[]
       <svg width={w} height={h} className="font-mono">
         {visible.map((n) => n.parent >= 0 && pos.has(n.parent) && (() => {
           const a = px(n.parent), b = px(n.id);
-          const cls = n.status === "pruned" ? "stroke-destructive/50" : onPath.has(n.id) ? "stroke-primary" : "stroke-border";
+          const cls = n.status === "pruned" ? "stroke-destructive/50" : onPath.has(n.id) ? "stroke-primary" : "stroke-muted-foreground/40";
           return <line key={`e${n.id}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} strokeWidth={onPath.has(n.id) ? 2 : 1} strokeDasharray={n.status === "pruned" ? "3 3" : undefined} className={cls} />;
         })())}
         {visible.map((n) => {
