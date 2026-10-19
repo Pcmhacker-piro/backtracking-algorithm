@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Backtracking Lab — Interactive Algorithm Visualizer" },
-      { name: "description", content: "Watch backtracking solve N-Queens, mazes, Sudoku, permutations and more — step by step with synced code and recursion tree." },
-      { property: "og:title", content: "Backtracking Lab — Interactive Algorithm Visualizer" },
+      { title: "Backtracking Visualizer — Permutations & Subset Sum" },
+      { name: "description", content: "Step through backtracking for permutations and subset sum with synced code, call-stack metrics and state-space tree." },
+      { property: "og:title", content: "Backtracking Visualizer — Permutations & Subset Sum" },
       { property: "og:description", content: "Step through real backtracking execution with synced code, explanations and recursion tree." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -22,13 +22,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const DEFAULTS: Params = { n: 4, noAdjacentOnes: false, nums: [3, 34, 4, 12, 5, 2], target: 9, findAll: false };
+const DEFAULTS: Params = { n: 3, nums: [3, 34, 4, 12, 5, 2], target: 9, findAll: false };
 
 function Index() {
-  const [problem, setProblem] = useState<ProblemId>("nqueens");
+  const [problem, setProblem] = useState<ProblemId>("perm");
   const [params, setParams] = useState<Params>(DEFAULTS);
   const [numsText, setNumsText] = useState(DEFAULTS.nums.join(", "));
-  const [config, setConfig] = useState<{ id: ProblemId; p: Params }>({ id: "nqueens", p: DEFAULTS });
+  const [config, setConfig] = useState<{ id: ProblemId; p: Params }>({ id: "perm", p: DEFAULTS });
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(5);
@@ -59,27 +59,32 @@ function Index() {
     setPlaying(true);
   };
 
-  const sizeRange = problem === "nqueens" ? [4, 8] : [1, 4];
-  const showSize = ["nqueens", "binary", "perm"].includes(problem);
-  const canFindAll = ["nqueens", "maze", "sudoku", "subset"].includes(problem);
+  const sizeRange = [1, 5];
+  const showSize = problem === "perm";
+  const canFindAll = problem === "subset";
   const solved = step.line === 2;
 
   return (
     <div className="min-h-screen px-3 py-4 sm:px-5">
-      <header className="mb-4 flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            <span className="font-mono text-primary">&gt;_</span> Backtracking Lab
-          </h1>
-          <p className="text-sm text-muted-foreground">Choose → Explore → Undo, one real step at a time.</p>
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-sm font-semibold text-primary">BT</div>
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight sm:text-xl">Backtracking Visualizer</h1>
+            <p className="text-xs text-muted-foreground">Permutations & Subset Sum · execution trace, call stack and state-space tree</p>
+          </div>
         </div>
-        <span className="font-mono text-xs text-muted-foreground">{PROBLEMS.find((p) => p.id === config.id)?.name} · {total} steps recorded{recording.truncated && " (capped)"}</span>
+        <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+          <span className="rounded border border-border px-2 py-1">{PROBLEMS.find((p) => p.id === config.id)?.name}</span>
+          <span className="rounded border border-border px-2 py-1">{total} steps{recording.truncated && " · capped"}</span>
+          <span className="rounded border border-border px-2 py-1">{config.id === "perm" ? "O(n · n!)" : "O(2ⁿ)"}</span>
+        </div>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)_360px]">
         {/* Left */}
         <aside className="panel h-fit space-y-4 p-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Problem</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Algorithm</h2>
           <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
             {PROBLEMS.map((p) => (
               <button key={p.id} onClick={() => setProblem(p.id)}
@@ -93,13 +98,10 @@ function Index() {
           <div className="space-y-3 border-t border-border pt-4 text-sm">
             {showSize && (
               <label className="block">
-                <div className="mb-1 flex justify-between"><span>{problem === "nqueens" ? "Board size" : "Length n"}</span><span className="font-mono text-primary">{Math.min(sizeRange[1], Math.max(sizeRange[0], params.n))}</span></div>
+                <div className="mb-1 flex justify-between"><span>n (elements)</span><span className="font-mono text-primary">{Math.min(sizeRange[1], Math.max(sizeRange[0], params.n))}</span></div>
                 <input type="range" min={sizeRange[0]} max={sizeRange[1]} value={Math.min(sizeRange[1], Math.max(sizeRange[0], params.n))}
                   onChange={(e) => setParams({ ...params, n: +e.target.value })} className="w-full accent-primary" />
               </label>
-            )}
-            {problem === "binary" && (
-              <label className="flex items-center gap-2"><input type="checkbox" checked={params.noAdjacentOnes} onChange={(e) => setParams({ ...params, noAdjacentOnes: e.target.checked })} className="accent-primary" />Forbid adjacent 1s (shows pruning)</label>
             )}
             {problem === "subset" && (
               <>
@@ -109,14 +111,12 @@ function Index() {
                   <input type="number" min={1} value={params.target} onChange={(e) => setParams({ ...params, target: +e.target.value })} className="w-full rounded-md border border-input bg-background px-2 py-1.5 font-mono" /></label>
               </>
             )}
-            {problem === "maze" && <p className="text-xs text-muted-foreground">Fixed 7×7 maze. Moves are tried in order: down, right, up, left.</p>}
-            {problem === "sudoku" && <p className="text-xs text-muted-foreground">4×4 puzzle with 2×2 boxes. Digits 1–4.</p>}
             {canFindAll && (
-              <label className="flex items-center gap-2"><input type="checkbox" checked={params.findAll} onChange={(e) => setParams({ ...params, findAll: e.target.checked })} className="accent-primary" />Keep searching for all solutions</label>
+              <label className="flex items-center gap-2"><input type="checkbox" checked={params.findAll} onChange={(e) => setParams({ ...params, findAll: e.target.checked })} className="accent-primary" />Enumerate all solutions</label>
             )}
           </div>
           <button onClick={start} className="w-full rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
-            Start Visualization
+            Run Algorithm
           </button>
         </aside>
 
@@ -147,7 +147,7 @@ function Index() {
 
           <div className="panel p-3">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recursion tree</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">State-space tree</h2>
               <div className="flex gap-3 text-[11px] text-muted-foreground">
                 <Legend cls="bg-primary" t="active" /><Legend cls="bg-primary/30" t="path" /><Legend cls="bg-muted" t="returned" /><Legend cls="bg-destructive/40" t="pruned" /><Legend cls="bg-success/50" t="solution" />
               </div>
@@ -187,14 +187,7 @@ function Index() {
 }
 
 function describe(id: ProblemId, s: any): string {
-  switch (id) {
-    case "nqueens": return `queens = [${s.queens.map((q: number) => (q < 0 ? "·" : q + 1)).join(", ")}]`;
-    case "maze": return `path = ${s.path.map((p: number[]) => `(${p[0]},${p[1]})`).join("→")}`;
-    case "binary": return `str = "${s.str}"`;
-    case "perm": return `perm = [${s.perm.join(", ")}]`;
-    case "sudoku": return s.grid.map((r: number[]) => r.map((v) => v || "·").join(" ")).join(" | ");
-    case "subset": return `chosen = {${s.chosen.map((k: number) => s.nums[k]).join(", ")}}, sum = ${s.sum}`;
-  }
+  return id === "perm" ? `perm = [${s.perm.join(", ")}]` : `chosen = {${s.chosen.map((k: number) => s.nums[k]).join(", ")}}, sum = ${s.sum}`;
 }
 
 function Ctl({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) {
