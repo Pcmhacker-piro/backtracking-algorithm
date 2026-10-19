@@ -12,9 +12,9 @@ const SOURCES: Record<ProblemId, { file: string; code: string[]; map: Record<num
       "        return;",
       "    }",
       "    for (int x = 1; x <= n; ++x) {",
-      "        if (used[x]) continue;            // prune",
+      "        if (used[x]) continue; // prune",
       "        cur.push_back(x); used[x] = true; // choose",
-      "        permute(cur, used, n);            // explore",
+      "        permute(cur, used, n); // explore",
       "        cur.pop_back();   used[x] = false; // undo",
       "    }",
       "}",
@@ -29,9 +29,9 @@ const SOURCES: Record<ProblemId, { file: string; code: string[]; map: Record<num
       "    if (i == n) return;",
       "    for (bool take : {true, false}) {",
       "        if (take && sum + a[i] > target) continue; // prune",
-      "        if (take) chosen.push_back(a[i]);          // choose",
+      "        if (take) chosen.push_back(a[i]); // choose",
       "        subsetSum(i + 1, sum + (take ? a[i] : 0)); // explore",
-      "        if (take) chosen.pop_back();               // undo",
+      "        if (take) chosen.pop_back(); // undo",
       "    }",
       "}",
     ],
@@ -64,7 +64,7 @@ export function CodePanel({ problem, line, valid }: { problem: ProblemId; line: 
         <span className="ml-2 font-mono text-[11px] text-muted-foreground">{src.file}</span>
         <span className="ml-auto rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">C++17</span>
       </div>
-      <pre className="overflow-x-auto py-2 font-mono text-[11.5px] leading-6">
+      <pre className="overflow-x-auto py-2 font-mono text-[11px] leading-6 [font-variant-ligatures:none]">
         {src.code.map((t, i) => {
           const on = i === active;
           return (
