@@ -36,7 +36,7 @@ function Index() {
 
   const recording = useMemo(() => run(config.id, config.p), [config]);
   const total = recording.steps.length;
-  const step = recording.steps[Math.min(i, total - 1)];
+  const step = recording.steps[Math.min(i, total - 1)]!;
 
   useEffect(() => {
     if (!playing) return;
